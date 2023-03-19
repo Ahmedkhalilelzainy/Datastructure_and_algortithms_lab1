@@ -15,7 +15,7 @@ public class AVL<T extends Comparable<T>>{
             return 0;
         return node.getHeight();
     }
-    public int balance(Node<T> node){
+    public int balanceFactor(Node<T> node){
         if(node == null)
             return 0;
         return height(node.getLeft()) - height(node.getRight());
@@ -68,7 +68,7 @@ public class AVL<T extends Comparable<T>>{
     }
 
     //function to get the minimum value of the subtree rooted at root
-    private T minValue(Node<T> root){
+    private T minRight(Node<T> root){
         T min = root.getKey();
         while (root.getLeft() != null){
             root = root.getLeft();
@@ -77,8 +77,53 @@ public class AVL<T extends Comparable<T>>{
         return min;
     }
     public void delete(T val){
+        root = deleteRec(val, root);
     }
     public Node<T> deleteRec(T val, Node<T> root){
+        if(root == null)
+            return root;
+        if(root.getKey().compareTo(val) > 0){
+            root.setLeft(deleteRec(val, root.getLeft()));
+        }else if(root.getKey().compareTo(val) < 0){
+            root.setRight(deleteRec(val, root.getRight()));
+        }else{
+            if(root.getLeft() == null){
+                root = root.getRight();
+            }else if(root.getRight() == null){
+                root = root.getLeft();
+            }else{
+                T toDelete = minRight(root.getRight());
+                root.setKey(toDelete);
+                root.setRight(deleteRec(toDelete, root.getRight()));
+            }
+        }
+        if(root == null){
+            return root;
+        }
+        //update height
+        root.setHeight(Math.max(height(root.getLeft()), height(root.getRight())) + 1);
+        //get balance
+        int balance = balanceFactor(root);
+        //right
+        if(balance < -1){
+            //RR case
+            if(balanceFactor(root.getRight()) <= 0){
+                return leftRotate(root);
+            }
+            //RL case
+            root.setRight(rightRotate(root.getRight()));
+            return leftRotate(root);
+        }
+        //left
+        if(balance > 1){
+            //LL case
+            if(balanceFactor(root.getLeft()) >= 0){
+                return rightRotate(root);
+            }
+            //LR case
+            root.setLeft(leftRotate(root.getLeft()));
+            return rightRotate(root);
+        }
         return root;
     }
 
