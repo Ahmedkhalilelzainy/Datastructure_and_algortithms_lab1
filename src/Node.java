@@ -43,7 +43,17 @@ public class Node<T extends Comparable<T>>{
     public void print(){
         if(this.left!=null)
             this.left.print();
-        System.out.println(this.key);
+        System.out.print("val: " +this.key);
+        if(this.left == null){
+            System.out.print("  left: null");
+        }else{
+            System.out.print("  left: " + this.left.key);
+        }
+        if(this.right == null){
+            System.out.println("  right: null");
+        }else{
+            System.out.println("  right: " + this.right.key);
+        }
         if(this.right!=null)
             this.right.print();
     }
