@@ -1,9 +1,15 @@
 package AVL_Tree;
 
 
+import RB_Tree.complementary;
+
 public class AVL<T extends Comparable<T>> implements ITree<T> {
-    private Node<T> root = null;
-    private int size = 0;
+    private Node<T> root;
+    private int size;
+    public AVL(){
+        root = null;
+        size = 0;
+    }
     public Node<T> getRoot() {
         return root;
     }

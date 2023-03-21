@@ -1,6 +1,8 @@
 package RB_Tree;
 
-public class RB<T extends Comparable<T>> {
+import AVL_Tree.ITree;
+
+public class RB<T extends Comparable<T>> implements ITree<T> {
     private RBNode<T> root;
     private int size;
     private complementary function;
@@ -15,11 +17,11 @@ public class RB<T extends Comparable<T>> {
         return function.search(valueNeeded, root);
     }
 
-    public void insert(T valueInserted){
+    public boolean insert(T valueInserted){
         // need return type(boolean) ... implementation.
         root = function.insert(valueInserted, root, null, root);
         function.checkBalance(root);
-
+        return true;
     }
 
     public void treeTraversal(RBNode<T> currentNode, String direction){
@@ -39,5 +41,14 @@ public class RB<T extends Comparable<T>> {
 
     public RBNode<T> getRoot() {
         return this.root;
+    }
+    public boolean delete(T val){
+        return true;
+    }
+    public int size(){
+        return size;
+    }
+    public int height(){
+        return 0;
     }
 }
