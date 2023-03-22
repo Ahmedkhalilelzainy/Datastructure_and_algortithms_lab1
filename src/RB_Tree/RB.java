@@ -19,7 +19,7 @@ public class RB<T extends Comparable<T>> implements ITree<T> {
         return function.search(valueNeeded, root);
     }
 
-    public void treeTraversal(RBNode<T> currentNode, String direction){
+    private void treeTraversal(RBNode<T> currentNode, String direction){
         // base case
         if( currentNode == null ){
             return;
@@ -34,9 +34,6 @@ public class RB<T extends Comparable<T>> implements ITree<T> {
 
     }
 
-    public void setRoot(RBNode<T> root){
-        this.root = root;
-    }
     public RBNode<T> getRoot() {
         return this.root;
     }
