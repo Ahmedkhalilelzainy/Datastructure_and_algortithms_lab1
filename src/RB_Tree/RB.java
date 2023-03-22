@@ -43,12 +43,23 @@ public class RB<T extends Comparable<T>> implements ITree<T> {
         return this.root;
     }
     public boolean delete(T val){
-        return true;
+        return function.deleteNode(val,root,this);
     }
+
     public int size(){
         return size;
     }
     public int height(){
         return 0;
+    }
+    public void transplant(RBNode<T>nodeTobeDeleted,RBNode<T>replacement){
+        if(nodeTobeDeleted.getParent()==null)
+            root=replacement;
+        else if (nodeTobeDeleted==nodeTobeDeleted.getParent().getLeftChild())
+            nodeTobeDeleted.getParent().setLeftChild(replacement);
+        else
+            nodeTobeDeleted.getParent().setRightChild(replacement);
+        if(replacement!=null)
+        replacement.setParent(nodeTobeDeleted.getParent());
     }
 }

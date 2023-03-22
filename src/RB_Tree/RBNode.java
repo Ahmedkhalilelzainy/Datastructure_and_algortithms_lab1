@@ -45,6 +45,9 @@ public class RBNode<T extends Comparable<T>> {
     public T getKey() {
         return key;
     }
+    public void setKey(T val) {
+         key=val;
+    }
 
 
 }

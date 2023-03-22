@@ -30,7 +30,19 @@ public class complementary<T extends Comparable<T>> {
         }
     }
 
-
+    private RBNode<T> getNode(T key,RBNode<T>currentNode){
+        if( currentNode == null ){
+            return null;
+        }
+        int result = key.compareTo(currentNode.getKey());
+        if ( result > 0 ) {
+            return getNode(key, currentNode.getRightChild());
+        } else if (result < 0) {
+            return getNode(key, currentNode.getLeftChild());
+        } else {
+            return currentNode;
+        }
+    }
     // wrong because of position of parent to grandpa.
     public void leftRotate(RBNode<T> currentNode){
         RBNode<T> oldGrandPa = currentNode.getParent().getParent();
@@ -94,7 +106,7 @@ public class complementary<T extends Comparable<T>> {
                     controllerNode.setRightChild( newNode );
                 } else {
                     controllerNode.setLeftChild( newNode );
-                } // noooooo insertion for existing value.
+                } // no insertion for existing value.
                 checkBalance(newNode);
                 return rootNode;
             } else {
@@ -189,5 +201,127 @@ public class complementary<T extends Comparable<T>> {
         }
     }
 
+    public boolean deleteNode(T key,RBNode<T>currentNode,RB<T>usedTree){
+       RBNode<T>nodeTobeDeleted=getNode(key,currentNode);
+       RBNode<T>temp=new RBNode<T>(null);
+       if(nodeTobeDeleted==null)return false;
+        RBNode<T>replacement=nodeTobeDeleted;
+        Color colorOfDeletedNode=nodeTobeDeleted.getColor();
+        System.out.println(colorOfDeletedNode);
+       //1st case
+        if(nodeTobeDeleted.getLeftChild()==null){
+           temp=nodeTobeDeleted.getRightChild();
+            usedTree.transplant(nodeTobeDeleted,nodeTobeDeleted.getRightChild());
+       }
+        //2nd case
+       else if(nodeTobeDeleted.getRightChild()==null){
+          temp=nodeTobeDeleted.getLeftChild();
+           usedTree.transplant(nodeTobeDeleted,nodeTobeDeleted.getLeftChild());
+       }
+       //3rd case
+       else{
+           replacement= minimum(nodeTobeDeleted.getRightChild());
+             colorOfDeletedNode=replacement.getColor();
+             if(replacement.getRightChild()!=null)
+                temp=replacement.getRightChild();
+             if(replacement.getParent()==nodeTobeDeleted){
+                 temp.setParent(replacement);
+             }
+             else{
+                 usedTree.transplant(replacement,replacement.getRightChild());
+                 replacement.setRightChild(nodeTobeDeleted.getRightChild());
+                 replacement.getRightChild().setParent(replacement);
+                 temp.setParent(replacement.getParent());
+             }
+             usedTree.transplant(nodeTobeDeleted,replacement);
+             replacement.setLeftChild(nodeTobeDeleted.getLeftChild());
+             replacement.getLeftChild().setParent(replacement);
+             replacement.setColor(nodeTobeDeleted.getColor());
+       }
+        System.out.println(colorOfDeletedNode);
+       if(colorOfDeletedNode==Color.BLACK)
+            delete_fixup(temp,usedTree);
+       return true;
+    }
+
+    public void delete_fixup(RBNode<T>currentNode,RB tree){
+//        System.out.println(currentNode.getParent().getKey());
+        RBNode<T>sibling;
+                while (currentNode!=tree.getRoot()&&currentNode.getColor()==Color.BLACK){
+            if(currentNode==currentNode.getParent().getLeftChild()){
+                sibling=currentNode.getParent().getRightChild();
+               //case 1
+                if(sibling.getColor()==Color.RED){
+                    sibling.setColor(Color.BLACK);
+                    currentNode.getParent().setColor(Color.RED);
+                    leftRotate(currentNode.getParent());
+                    sibling=currentNode.getParent().getRightChild();
+                }
+                //case2
+                if(sibling.getLeftChild().getColor()==Color.BLACK&&sibling.getRightChild().getColor()==Color.BLACK){
+                sibling.setColor(Color.RED);
+                currentNode =currentNode.getParent();
+                }
+                else{
+                    //case3
+                    if(sibling.getRightChild().getColor()==Color.BLACK){
+                        sibling.getLeftChild().setColor(Color.BLACK);
+                        sibling.setColor(Color.RED);
+                        rightRotate(sibling);
+                        sibling=currentNode.getParent().getRightChild();
+                    }
+                    //case4
+                    sibling.setColor(currentNode.getParent().getColor());
+                    currentNode.getParent().setColor(Color.BLACK);
+                    sibling.getRightChild().setColor(Color.BLACK);
+                    leftRotate(currentNode.getParent());
+                    currentNode=tree.getRoot();
+                }
+
+            }
+            else{
+                sibling=currentNode.getParent().getLeftChild();
+                if(sibling.getColor()==Color.RED){
+                    //case1
+                    sibling.setColor(Color.BLACK);
+                    currentNode.getParent().setColor(Color.RED);
+                    rightRotate(currentNode.getParent());
+                    sibling=currentNode.getParent().getLeftChild();
+                }
+                if(sibling.getLeftChild().getColor()==Color.BLACK&&sibling.getRightChild().getColor()==Color.BLACK){
+                //case 2
+                    sibling.setColor(Color.RED);
+                    currentNode=currentNode.getParent();
+                }
+                else {
+                    if(sibling.getLeftChild().getColor()==Color.BLACK){
+                     sibling.getRightChild().setColor(Color.BLACK);
+                     sibling.setColor(Color.RED);
+                     leftRotate(sibling);
+                     sibling=currentNode.getParent().getLeftChild();
+                    }
+                    sibling.setColor(currentNode.getParent().getColor());
+                    currentNode.getParent().setColor(Color.BLACK);
+                    sibling.getLeftChild().setColor(Color.BLACK);
+                    rightRotate(currentNode.getParent());
+                    currentNode=tree.getRoot();
+                }
+
+            }
+        }
+        currentNode.setColor(Color.BLACK);
+    }
+    public RBNode<T> minimum(RBNode<T> currentNode){
+        while (currentNode.getLeftChild()!=null){
+            currentNode=currentNode.getLeftChild();
+        }
+        return currentNode;
+    }
+    public RBNode<T> max(RBNode<T> currentNode){
+        while (currentNode.getRightChild()!=null){
+            currentNode=currentNode.getRightChild();
+        }
+        return currentNode;
+    }
 
 }
